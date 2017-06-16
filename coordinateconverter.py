@@ -1,5 +1,5 @@
-# Converter between equatorial, horizontal and galactic coordinates
-# Allows input of the original coordinate system, the system to transform into and a horizontal and vertical coordinate
+# Converter between equatorial, horizontal and galactic coordinates to azimuth-elevation
+# Allows input of the original coordinate system and a horizontal and vertical coordinate
 
 def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='noinput'):
 
@@ -21,7 +21,6 @@ def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='no
     elif vertical == 'noinput':
         print('Error: missing input. Please input a vertical coordinate.')
     else:
-        print('Input accepted.')
 
         # Check input coordinate formats
         # Coordinates should be input either as a float/int or as a string of hours/degrees, minutes and seconds
@@ -60,24 +59,20 @@ def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='no
                 mintodeg = float(vertcoords[1][0])/60
                 sectodeg = float(vertcoords[2][0])/3600
                 verticaldeg = str(hourtodeg+mintodeg+sectodeg)
-                print(verticaldeg)
             elif re.search("(\d*(\.\d*)?)(\s*)?d(\s*)?((\d*(\.\d*)?)(\s*)?m)?(\s*)?((\d*(\.\d*)?)(\s*)?s)?", vertical) is not None:
                 vertcoords = re.findall("(\d+(\.\d+)?)", vertical)
                 degtodeg = float(vertcoords[0][0])
                 mintodeg = float(vertcoords[1][0]) / 60
                 sectodeg = float(vertcoords[2][0]) / 3600
                 verticaldeg = str(degtodeg + mintodeg + sectodeg)
-                print(verticaldeg)
             else:
                 print('Error: invalid coordinate. Please give horizontal coordinate in degrees (float) or hms/dms (string).')
 
         elif type(vertical) == float or int:
             verticaldeg = str(vertical)
-            print(verticaldeg)
 
         else:
             print('Error: invalid coordinate. Please give vertical coordinate in degrees (float) or hms/dms (string).')
-
 
         # Check if the coordinate system to convert from is valid
         if convertfrom == "horizontal":
@@ -93,7 +88,7 @@ def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='no
                 gotoaz = referencestar.az
                 gotoel = referencestar.alt
 
-                return gotoaz, gotoel
+                return (gotoaz, gotoel)
 
         elif convertfrom == "equatorial":
 
@@ -108,7 +103,7 @@ def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='no
                 gotoaz = referencestar.az
                 gotoel = referencestar.alt
 
-                return gotoaz, gotoel
+                return (gotoaz, gotoel)
 
         elif convertfrom == "galactic":
 
@@ -124,7 +119,7 @@ def coordinate_convert(convertfrom='noinput', horizontal='noinput', vertical='no
                 gotoaz = referencestar.az
                 gotoel = referencestar.alt
 
-                return gotoaz, gotoel
+                return (gotoaz, gotoel)
 
                # Possible later addition - ecliptic coordinates
 
