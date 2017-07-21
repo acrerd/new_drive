@@ -265,12 +265,13 @@ def runinterface():
         # Get current az-el from driver
         # Convert to ra-dec
         # Produce four labels for az-el and ra-dec coordinates
-        # Update this periodically - 200ms
+        # Update this periodically - 50ms is enough to make the change of numbers look smooth
         aznow = float(Az.get())  # placeholder
         elnow = float(El.get())  # placeholder
+        # While the program is running, the clock won't automatically update
+        # This updates it manually each loop
         mylocation.date = datetime.datetime.utcnow()
         [rarad, decrad] = mylocation.radec_of(math.radians(aznow), math.radians(elnow))
-        # Problem - clock stops for mylocation when the program's running; won't update
         ranow = math.degrees(rarad)
         decnow = math.degrees(decrad)
         azcoord = todms(aznow)
@@ -390,8 +391,7 @@ def runinterface():
             choice = coordsyschoice.get()
         # Next, get horizontal coordinates
         # The below code is the series of checks to make sure the input provided is sensible
-        # Details for the formatting it demands should go on the wiki
-        # To do: all error messages as popups
+        # Details for the formatting it demands are available for display on the wiki
         if len(horizdeg.get()) > 0:
             try:
                 horizdegval = int(horizdeg.get())
@@ -578,9 +578,7 @@ def runinterface():
             missinginputerror("a horizontal coordinate.")
             return
         # Next, get vertical coordinates
-        # The below code is the series of checks to make sure the input provided is sensible
-        # Details for the formatting it demands should go on the wiki
-        # To do: all error messages as popups
+        # Same set of checks as above
         if len(vertdeg.get()) > 0:
             isnegative = tk.BooleanVar(maininterface)
             isnegative.set(False)
@@ -775,7 +773,7 @@ def runinterface():
         else:
             missinginputerror("a vertical coordinate.")
             return
-        # Handling negative inputs separately, else the addition is -d + m + s rather than -d - m -s as should be
+        # Handling negative inputs separately, else the addition is -d + m + s rather than -d - m - s as should be
         if isnegative is True:
             vertdecimaltotal = -vertdecimaltotal
         else:
@@ -813,7 +811,8 @@ def runinterface():
         else:
             gotoaz = horizdecimaltotal
             gotoel = vertdecimaltotal
-
+           
+        # If the resulting coordinates are below the horizon, prevents attempts to drive to them
         if gotoel < 0:
             coordunavailableerror()
             Stop_Drive()
@@ -835,6 +834,7 @@ def runinterface():
 
     def objdrive():
         # This directs the driver to any desired object on the list
+        # Objects may be added by appending this list
         if objchoice.get() == "":
             missinginputerror("an object.")
             return
@@ -881,10 +881,7 @@ def runinterface():
                 return
         else:
             Set_Drive(gotoaz, gotoel)
-        azdifference = abs(gotoaz - float(Az.get()))
-        eldifference = abs(gotoel - float(El.get()))
-        maxdifference = round(max(azdifference, eldifference))
-        timetowait = maxdifference*500
+
         # Tracking updates the position every 24 seconds (equivalent to 0.1 degree)
         if objtrackchoice.get() == 1:
             objframe.after(24000, objdrive)
@@ -935,7 +932,7 @@ def runinterface():
     # Note: styles won't work unless placed after the maininterface declaration
     maininterface.deiconify()
     maininterface.title("Telescope Interface")
-    maininterface.resizable(0, 0)  # Disabled window resizing - if annoying later, removed
+    maininterface.resizable(0, 0)  # Disabled window resizing - if annoying later, remove
 
     # Setting up styles
     style = ttk.Style()
